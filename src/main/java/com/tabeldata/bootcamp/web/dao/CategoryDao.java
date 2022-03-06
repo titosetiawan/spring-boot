@@ -21,7 +21,7 @@ public class CategoryDao {
         return this.jdbcTemplate.query(sql, new CategoryDao.RowMapperInner());
     }
 
-    public Category findById(String id) {
+    public Category findById(Integer id) {
         String sql = "select * from category where category_id = :kode";
         MapSqlParameterSource map = new MapSqlParameterSource();
         map.addValue("kode", id);
@@ -38,7 +38,7 @@ public class CategoryDao {
         this.jdbcTemplate.update(sql, map);
     }
 
-    public void update(Category data) {
+    public void updateCategory(Category data) {
         String sql = "update category set name = :name, description = :description where category_id = :kodeid";
         MapSqlParameterSource map = new MapSqlParameterSource();
         map.addValue("kodeid", data.getCategory_id());
@@ -47,7 +47,7 @@ public class CategoryDao {
         map.addValue("description", data.getDescription());
         this.jdbcTemplate.update(sql, map);
     }
-    public void delete(String category_id) {
+    public void delete(Integer category_id) {
         String sql = "delete from category where category_id = :kodeid";
         MapSqlParameterSource map = new MapSqlParameterSource();
         map.addValue("kodeid", category_id);
