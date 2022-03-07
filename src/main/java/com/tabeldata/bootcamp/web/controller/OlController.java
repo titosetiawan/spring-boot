@@ -3,14 +3,15 @@ package com.tabeldata.bootcamp.web.controller;
 import com.tabeldata.bootcamp.web.dao.CategoryDao;
 import com.tabeldata.bootcamp.web.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -24,7 +25,7 @@ public class OlController {
         return dao.list();
     }
 
-    @GetMapping("/findById/{kodeid}")
+    @GetMapping("/findById/{id}")
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         try {
             Category data = this.dao.findById(id);
@@ -48,44 +49,40 @@ public class OlController {
         return data;
     }
 
-    @PostMapping(value = "/input")
-    public ResponseEntity<?> inputData(@RequestBody @Valid Category data) {
-        try {
-            this.dao.insertData(data);
-            return ResponseEntity.ok().build();
-        } catch (DuplicateKeyException dke) {
-            dke.printStackTrace();
-            return ResponseEntity.badRequest()
-                    .body("Duplicate data");
-        } catch (DataAccessException dea) {
-            dea.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("database gak konek atau sql salah");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Gak tau errornya apa! check sendiri");
-        }
+    @PostMapping(value = "/insert")
+    public ResponseEntity<Map<String, Object>>
+    insertData(@RequestBody @Valid Category data, BindingResult result) {
+        Map<String, Object> hasil = new HashMap<>();
+        hasil.put("id", dao.insertData(data));
+        hasil.put("status", "Simpan berhasil");
+        return ResponseEntity.ok(hasil);
+//        try {
+//            this.dao.insertData(data);
+//            return ResponseEntity.ok().build();
+//        } catch (DuplicateKeyException dke) {
+//            dke.printStackTrace();
+//            return ResponseEntity.badRequest()
+//                    .body("Duplicate data");
+//        } catch (DataAccessException dea) {
+//            dea.printStackTrace();
+//            return ResponseEntity.internalServerError()
+//                    .body("database gak konek atau sql salah");
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return ResponseEntity.internalServerError()
+//                    .body("Gak tau errornya apa! check sendiri");
+//        }
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateCategory(@Valid @RequestBody Category data) {
-        try {
-            this.dao.updateCategory(data);
-            return ResponseEntity.ok().build();
-        } catch (DuplicateKeyException dke) {
-            dke.printStackTrace();
-            return ResponseEntity.badRequest()
-                    .body("Duplicate data");
-        } catch (DataAccessException dea) {
-            dea.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("database gak konek atau sql salah");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return ResponseEntity.internalServerError()
-                    .body("Gak tau errornya apa! check sendiri");
-        }
+    @PostMapping("/update")
+    public ResponseEntity<Map<String, Object>>
+    updateCategory(@RequestBody Category data) {
+        Map<String, Object> hasil = new HashMap<>();
+        dao.updateCategory(data);
+        hasil.put("id", 0);
+        hasil.put("status", "Update Berhasil");
+        return ResponseEntity.ok().build();
+
     }
 
 

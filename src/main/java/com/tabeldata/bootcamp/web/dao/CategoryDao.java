@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -28,14 +30,16 @@ public class CategoryDao {
         return this.jdbcTemplate.queryForObject(sql, map, new CategoryDao.RowMapperInner());
     }
 
-    public void insertData(Category data) {
+    public Integer insertData(Category data) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "insert into category(category_id, department_id, name, description) values (:categoryId, :departmentId, :name, :description)";
         MapSqlParameterSource map = new MapSqlParameterSource();
         map.addValue("categoryId", data.getCategory_id());
         map.addValue("departmentId", data.getDepartment_id());
         map.addValue("name", data.getName());
         map.addValue("description", data.getDescription());
-        this.jdbcTemplate.update(sql, map);
+        jdbcTemplate.update(sql, map, keyHolder);
+        return (Integer) keyHolder.getKeys().get("category_id");
     }
 
     public void updateCategory(Category data) {
