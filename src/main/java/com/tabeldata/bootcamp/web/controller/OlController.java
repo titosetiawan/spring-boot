@@ -51,27 +51,17 @@ public class OlController {
 
     @PostMapping(value = "/insert")
     public ResponseEntity<Map<String, Object>>
-    insertData(@RequestBody @Valid Category data, BindingResult result) {
+    insertData(@Valid @RequestBody Category data, BindingResult result) {
         Map<String, Object> hasil = new HashMap<>();
-        hasil.put("id", dao.insertData(data));
-        hasil.put("status", "Simpan berhasil");
-        return ResponseEntity.ok(hasil);
-//        try {
-//            this.dao.insertData(data);
-//            return ResponseEntity.ok().build();
-//        } catch (DuplicateKeyException dke) {
-//            dke.printStackTrace();
-//            return ResponseEntity.badRequest()
-//                    .body("Duplicate data");
-//        } catch (DataAccessException dea) {
-//            dea.printStackTrace();
-//            return ResponseEntity.internalServerError()
-//                    .body("database gak konek atau sql salah");
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            return ResponseEntity.internalServerError()
-//                    .body("Gak tau errornya apa! check sendiri");
-//        }
+
+        if (result.hasErrors()){
+            hasil.put("status", result.getFieldErrors());
+            return ResponseEntity.badRequest().body(hasil);
+        }else {
+            hasil.put("id", dao.insertData(data));
+            hasil.put("status", "Simpan berhasil");
+            return ResponseEntity.ok(hasil);
+        }
     }
 
     @PostMapping("/update")
@@ -92,3 +82,20 @@ public class OlController {
         return ResponseEntity.ok().build();
     }
 }
+
+//        try {
+//            this.dao.insertData(data);
+//            return ResponseEntity.ok().build();
+//        } catch (DuplicateKeyException dke) {
+//            dke.printStackTrace();
+//            return ResponseEntity.badRequest()
+//                    .body("Duplicate data");
+//        } catch (DataAccessException dea) {
+//            dea.printStackTrace();
+//            return ResponseEntity.internalServerError()
+//                    .body("database gak konek atau sql salah");
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return ResponseEntity.internalServerError()
+//                    .body("Gak tau errornya apa! check sendiri");
+//        }
